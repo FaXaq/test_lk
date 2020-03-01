@@ -27,13 +27,19 @@ module.exports = {
       },
       fontFamily: {
         "luko": ["Avenir-Roman"],
-        "luko-title": ["Avenir"]
+        "luko-bold": ["Avenir-Heavy"]
       },
       lineHeight: {
         "luko": "1.38"
+      },
+      cursor: {
+        copy: "copy",
+        inherit: "inherit"
       }
     }
   },
-  variants: {},
+  variants: {
+    borderColor: ["focus"]
+  },
   plugins: [],
 }

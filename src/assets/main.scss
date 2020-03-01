@@ -1,3 +1,14 @@
+@font-face {
+  font-family: "Avenir-Roman";
+  src: url('./fonts/AvenirLTStd-Roman.otf');
+}
+
+@font-face {
+  font-family: "Avenir-Heavy";
+  src: url('./fonts/AvenirLTStd-Heavy.otf');
+}
+
+
 @tailwind base;
 
 @tailwind components;
