@@ -1,22 +1,29 @@
 <template>
   <div class="home">
-    <div class="max-w-screen-md mx-auto p-4 md:p-16 leading-luko text-luko-black flex">
-      <img class="h-luko-md mr-luko-md" src="../assets/emma-photo.png">
+    <div
+      class="max-w-screen-md mx-auto p-4 md:p-16 leading-luko text-luko-black flex"
+    >
+      <img class="h-luko-md mr-luko-md" src="./../assets/emma-photo.png" />
       <div>
         <h5 class="font-luko-bold font-bold mb-luko-xs">Emma</h5>
         <p class="mb-luko-md">
-          Don't forget that for each new subscriber you refer, both you and them get
-          <strong class="font-luko-bold">one free month</strong>
-          of coverage!
+          Don't forget that for each new subscriber you refer, both you and them
+          get <strong class="font-luko-bold">one free month</strong> of coverage
+          !
         </p>
         <p>
           Share your
           <strong class="font-luko-bold">one free month</strong> referal code
         </p>
         <div class="mt-luko-md mb-luko-lg flex">
-          <Btn :preText="referalCode" :withIcon="true" class="cursor-copy" @click="copyReferalCode">
+          <Btn
+            :preText="referalCode"
+            :withIcon="true"
+            class="cursor-copy"
+            @click="copyReferalCode"
+          >
             <template v-slot:icon>
-              <CopyIcon/>
+              <CopyIcon />
             </template>
             <template v-if="canCopy">
               <p>Copy</p>
@@ -30,10 +37,22 @@
           You can also send
           <strong class="font-luko-bold">one free month</strong> by email
         </p>
-        <TxtArea class="mb-luko-md" :value="inputEmails" @update="(v) => inputEmails = v"/>
+        <TxtArea
+          class="mb-luko-md"
+          :value="inputEmails"
+          @update="v => (inputEmails = v)"
+        />
         <div class="flex">
-          <Slct :options="emails" @update="(v) => selectedEmailIndex = v" :selectedIndex="selectedEmailIndex" />
-          <Btn class="cursor-pointer ml-luko-sm" :secondary="true">
+          <Slct
+            :options="emails"
+            @update="v => (selectedEmailIndex = v)"
+            :selectedIndex="selectedEmailIndex"
+          />
+          <Btn
+            class="cursor-pointer ml-luko-sm"
+            :secondary="true"
+            @click="sendEmail"
+          >
             <template>
               <p>Done</p>
             </template>
@@ -50,6 +69,7 @@ import Btn from "@/components/commons/Btn.vue";
 import Slct from "@/components/commons/Slct.vue";
 import TxtArea from "@/components/commons/TxtArea.vue";
 import CopyIcon from "@/assets/icons/Copy.vue";
+import axios from "axios";
 
 export default Vue.extend({
   components: {
@@ -70,11 +90,14 @@ export default Vue.extend({
   computed: {
     emails(): string[] {
       // trim whitespace, split and filter out empty elements
-      return this.inputEmails.replace(" ", "").split(";").filter(e => e !== "");
+      return this.inputEmails
+        .replace(" ", "")
+        .split(";")
+        .filter(e => e !== "");
     },
 
     selectedEmail(): string | undefined {
-      return this.emails[this.selectedEmailIndex]
+      return this.emails[this.selectedEmailIndex];
     }
   },
   methods: {
@@ -97,19 +120,35 @@ export default Vue.extend({
         document.execCommand("copy");
         this.canCopy = false;
         this.hasCopied = true;
+
         setTimeout(() => {
           this.canCopy = true;
           this.hasCopied = false;
-        }, 1000)
-      } catch(e) {
+        }, 1000);
+      } catch (e) {
         console.error("Couldn't copy.");
       }
       // remove element
       document.body.removeChild(fakeInput);
     },
 
-    sendEmail() {
-      console.log(this.selectedEmail)
+    async sendEmail() {
+      if (this.selectedEmail) {
+        try {
+          const res = await axios.get("http://apilayer.net/api/check", {
+            params: {
+              access_key: "05fc294889aef000ef095a682b2460b9",
+              email: this.selectedEmail,
+              smtp: 1,
+              format: 1
+            }
+          });
+          console.log(res.data);
+        } catch (e) {
+          console.error("Error while checking email from the API.");
+          console.error(e);
+        }
+      }
     }
   }
 });
