@@ -6,21 +6,23 @@
         <h5 class="font-luko-bold font-bold mb-luko-xs">Emma</h5>
         <p class="mb-luko-md">
           Don't forget that for each new subscriber you refer, both you and them get
-          <strong
-            class="font-luko-bold"
-          >one free month</strong> of coverage!
+          <strong class="font-luko-bold">one free month</strong>
+          of coverage!
         </p>
         <p>
           Share your
           <strong class="font-luko-bold">one free month</strong> referal code
         </p>
         <div class="mt-luko-md mb-luko-lg flex">
-          <Btn :preText="referalCode" class="cursor-copy" @click="copyReferalCode">
+          <Btn :preText="referalCode" :withIcon="true" class="cursor-copy" @click="copyReferalCode">
             <template v-slot:icon>
               <CopyIcon/>
             </template>
-            <template>
+            <template v-if="canCopy">
               <p>Copy</p>
+            </template>
+            <template v-if="hasCopied">
+              <p>Copied !</p>
             </template>
           </Btn>
         </div>
@@ -28,7 +30,15 @@
           You can also send
           <strong class="font-luko-bold">one free month</strong> by email
         </p>
-        <TxtArea :value="inputEmails" @update="(v) => inputEmails = v"/>
+        <TxtArea class="mb-luko-md" :value="inputEmails" @update="(v) => inputEmails = v"/>
+        <div class="flex">
+          <Slct :options="emails" @update="(v) => selectedEmailIndex = v" :selectedIndex="selectedEmailIndex" />
+          <Btn class="cursor-pointer ml-luko-sm" :secondary="true">
+            <template>
+              <p>Done</p>
+            </template>
+          </Btn>
+        </div>
       </div>
     </div>
   </div>
@@ -37,6 +47,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Btn from "@/components/commons/Btn.vue";
+import Slct from "@/components/commons/Slct.vue";
 import TxtArea from "@/components/commons/TxtArea.vue";
 import CopyIcon from "@/assets/icons/Copy.vue";
 
@@ -44,17 +55,26 @@ export default Vue.extend({
   components: {
     Btn,
     TxtArea,
+    Slct,
     CopyIcon
   },
   data() {
     return {
       referalCode: "SHARETHELOVE+5WMXM",
-      inputEmails: ""
+      inputEmails: "",
+      canCopy: true,
+      hasCopied: false,
+      selectedEmailIndex: -1
     };
   },
   computed: {
     emails(): string[] {
-      return this.inputEmails.replace(" ", "").split(";");
+      // trim whitespace, split and filter out empty elements
+      return this.inputEmails.replace(" ", "").split(";").filter(e => e !== "");
+    },
+
+    selectedEmail(): string | undefined {
+      return this.emails[this.selectedEmailIndex]
     }
   },
   methods: {
@@ -73,9 +93,23 @@ export default Vue.extend({
       fakeInput.select();
       fakeInput.setSelectionRange(0, 99999);
       // copy
-      document.execCommand("copy");
+      try {
+        document.execCommand("copy");
+        this.canCopy = false;
+        this.hasCopied = true;
+        setTimeout(() => {
+          this.canCopy = true;
+          this.hasCopied = false;
+        }, 1000)
+      } catch(e) {
+        console.error("Couldn't copy.");
+      }
       // remove element
       document.body.removeChild(fakeInput);
+    },
+
+    sendEmail() {
+      console.log(this.selectedEmail)
     }
   }
 });

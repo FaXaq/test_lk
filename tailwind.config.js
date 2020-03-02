@@ -16,7 +16,10 @@ module.exports = {
       },
       height: {
         "luko-sm": "16px",
-        "luko-md": "48px",
+        "luko-md": "48px"
+      },
+      maxHeight: {
+        "luko-64": "16rem"
       },
       width: {
         "luko-sm": "16px",

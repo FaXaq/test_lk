@@ -4,8 +4,15 @@
       <p>{{ preText }}</p>
     </div>
     <button class="cursor-inherit" @click="$emit('click')">
-      <div class="py-luko-sm px-luko-lg bg-luko-blue text-white flex items-center">
-        <div class="mr-luko-sm">
+      <div
+        class="py-luko-sm px-luko-lg flex items-center"
+        :class="{
+          'bg-luko-blue': !secondary,
+          'text-white': !secondary,
+          'bg-luko-blue-light': secondary,
+          'text-luko-blue': secondary
+        }">
+        <div v-if="withIcon" class="mr-luko-sm">
           <slot name="icon"/>
         </div>
         <div>
@@ -22,6 +29,12 @@ export default Vue.extend({
   props: {
     preText: {
       required: false
+    },
+    withIcon: {
+      default: false
+    },
+    secondary: {
+      default: false
     }
   }
 });
